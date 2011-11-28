@@ -1,86 +1,133 @@
+%define api			1.0
+%define major		2
+%define gtk_major	0
+%define gir_major	1.0
+
+%define libname		%mklibname %{name} %{major}
+%define libgtk		%mklibname %{name}-gtk %{gtk_major}
+%define develname	%mklibname %{name} -d
+%define develgtk	%mklibname %{name}-gtk -d
+%define girname		%mklibname %{name}-gir %{gir_major}
+%define girgtk		%mklibname %{name}-gtk-gir %{gir_major}
+
 Name: mx
 Summary: User interface toolkit for the MeeGo
-Version: 1.1.0
-Release: %mkrel 1
+Version: 1.4.1
+Release: 1
 Group: Development/Library
 License: LGPLv2.1
-URL: http://www.meego.com
-Source0: %{name}-%{version}.tar.gz
-Patch0: %{name}-1.1.0-enable-deprecated.patch
-BuildRequires: libclutter1.0-devel
-BuildRequires: libgtk+2-devel
-BuildRequires: libstartup-notification-1-devel
-BuildRequires: libdbus-glib-devel
-BuildRequires: libgladeui-devel
+URL: http://www.clutter-project.org/
+Source0: http://source.clutter-project.org/sources/mx/1.4/%{name}-%{version}.tar.xz
+#Patch0: %{name}-1.1.0-enable-deprecated.patch
 BuildRequires: intltool
 BuildRequires: gettext
-BuildRequires: gir-repository
+BuildRequires: pkgconfig(clutter-gesture)
+BuildRequires: pkgconfig(clutter-imcontext-0.1)
+BuildRequires: pkgconfig(clutter-x11-1.0)
+BuildRequires: pkgconfig(dbus-glib-1)
+BuildRequires: pkgconfig(gobject-introspection-1.0)
+BuildRequires: pkgconfig(gtk+-2.0)
+BuildRequires: pkgconfig(libstartup-notification-1.0)
 
 %description
 'MX' is a currently experiemental toolkit for the meego-netbook
 implementation.
 
+%package -n %{libname}
+Group: System/Libraries
+Summary: Shared library for %{name}
+Conflicts: %{name} < %{version}-%{release}
 
-%package doc
-Summary: MX documentation
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+%description -n %{libname}
+This package contains the shared library for %{name}.
 
-%description doc
-Documentation for MX
+%package -n %{libgtk}
+Group: System/Libraries
+Summary: Shared library for %{name}-gtk
+Conflicts: %{name} < %{version}-%{release}
 
-%package devel
+%description -n %{libgtk}
+This package contains the shared library for %{name}-gtk.
+
+%package -n %{girname}
+Summary: GObject Introspection interface description for %{name}
+Group: System/Libraries
+Requires: %{libname} = %{version}-%{release}
+
+%description -n %{girname}
+GObject Introspection interface description for %{name}.
+
+%package -n %{girgtk}
+Summary: GObject Introspection interface description for %{name}-gtk
+Group: System/Libraries
+Requires: %{libgtk} = %{version}-%{release}
+
+%description -n %{girgtk}
+GObject Introspection interface description for %{name}-gtk.
+
+%package -n %{develname}
 Summary: MX development libraries and headers
 Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
-Requires: pkgconfig
+Requires: %{libname} = %{version}-%{release}
+%rename %{name}-doc
+Obsoletes: %{name}-devel
 
-%description devel
+%description -n %{develname}
 MX development libraries and header files
 
+%package -n %{develgtk}
+Summary: MX - Gtk development libraries and headers
+Group: Development/Libraries
+Requires: %{libgtk} = %{version}-%{release}
+
+%description -n %{develgtk}
+MX - Gtk development libraries and header files
+
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1 -b .enable-deprecated
+%setup -q
+%apply_patches
 
 %build
-autoreconf --install
 %configure2_5x \
-  --disable-static \
-  --enable-gtk-doc \
-  --without-clutter-gesture \
-  --with-glade
+	--disable-static \
+	--enable-introspection
 
 %make
 
 %install
 rm -rf %{buildroot}
 %makeinstall_std
-
+find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %find_lang mx-1.0
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
 %files -f mx-1.0.lang
-%defattr(-,root,root,-)
 %doc COPYING.LIB
-%{_libdir}/libmx*.so.*
-%{_libdir}/girepository-1.0/*.typelib
-%{_datadir}/mx
 %{_bindir}
+%{_datadir}/mx
 
+%files -n %{libname}
+%{_libdir}/libmx-%{api}.so.%{major}*
 
-%files doc
-%defattr(-,root,root,-)
-/usr/share/gtk-doc/html/mx
+%files -n %{libgtk}
+%{_libdir}/libmx-gtk-%{api}.so.%{gtk_major}*
 
-%files devel
-%defattr(-,root,root,-)
-%{_includedir}/mx-1.0/*
-%{_libdir}/libmx*.so
-%{_libdir}/libmx*.la
-%{_libdir}/pkgconfig/*.pc
-%{_datadir}/gir-1.0/*.gir
-%{_datadir}/glade3/catalogs/*.xml
+%files -n %{girname}
+%{_libdir}/girepository-1.0/Mx-%{api}.typelib
+
+%files -n %{girgtk}
+%{_libdir}/girepository-1.0/MxGtk-%{gir_major}.typelib
+
+%files -n %{develname}
+%{_includedir}/mx-1.0/mx/*
+%{_libdir}/libmx-%{api}.so
+%{_libdir}/pkgconfig/mx-%{api}.pc
+%{_datadir}/gtk-doc/html/mx
+%{_datadir}/gir-1.0/Mx-%{gir_major}.gir
+
+%files -n %{develgtk}
+%{_includedir}/mx-1.0/mx-gtk*
+%{_libdir}/libmx-gtk-%{api}*.so
+%{_libdir}/pkgconfig/mx-gtk-%{api}.pc
+%{_datadir}/gtk-doc/html/mx-gtk
+%{_datadir}/gir-1.0/MxGtk-%{gir_major}.gir
 
