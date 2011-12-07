@@ -67,7 +67,7 @@ GObject Introspection interface description for %{name}-gtk.
 
 %package -n %{develname}
 Summary: MX development libraries and headers
-Group: Development/Libraries
+Group: Development/C
 Requires: %{libname} = %{version}-%{release}
 %rename %{name}-doc
 Obsoletes: %{name}-devel
@@ -77,7 +77,7 @@ MX development libraries and header files
 
 %package -n %{develgtk}
 Summary: MX - Gtk development libraries and headers
-Group: Development/Libraries
+Group: Development/C
 Requires: %{libgtk} = %{version}-%{release}
 
 %description -n %{develgtk}
