@@ -92,7 +92,7 @@ MX - Gtk development libraries and header files
 	--disable-static \
 	--enable-introspection
 
-%make
+%make LIBS='-lm'
 
 %install
 rm -rf %{buildroot}
