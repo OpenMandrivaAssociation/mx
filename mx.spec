@@ -14,7 +14,7 @@ Name: mx
 Summary: User interface toolkit for the MeeGo
 Version: 1.4.1
 Release: 1
-Group: Development/Library
+Group: System/Libraries
 License: LGPLv2.1
 URL: http://www.clutter-project.org/
 Source0: http://source.clutter-project.org/sources/mx/1.4/%{name}-%{version}.tar.xz
