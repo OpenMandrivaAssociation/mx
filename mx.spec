@@ -1,4 +1,4 @@
-%define api		1.0
+%define api			1.0
 %define major		2
 %define gtk_major	0
 %define gir_major	1.0
@@ -12,19 +12,19 @@
 
 Name: mx
 Summary: User interface toolkit for the MeeGo
-Version: 1.4.5
-Release: 1
+Version: 1.4.7
+Release: 2
 Group: System/Libraries
 License: LGPLv2.1
 URL: http://www.clutter-project.org/
-Source0: http://source.clutter-project.org/sources/mx/1.4/%{name}-%{version}.tar.xz
+Source0: https://github.com/downloads/clutter-project/mx/%{name}-%{version}.tar.xz
+Patch0: mx-nogl.patch
 BuildRequires: intltool
 BuildRequires: gettext
 BuildRequires: pkgconfig(clutter-gesture)
 BuildRequires: pkgconfig(clutter-imcontext-0.1)
 BuildRequires: pkgconfig(clutter-x11-1.0)
 BuildRequires: pkgconfig(dbus-glib-1)
-BuildRequires: pkgconfig(gl)
 BuildRequires: pkgconfig(gobject-introspection-1.0)
 BuildRequires: pkgconfig(gtk+-2.0)
 BuildRequires: pkgconfig(libstartup-notification-1.0)
@@ -52,6 +52,7 @@ This package contains the shared library for %{name}-gtk.
 %package -n %{girname}
 Summary: GObject Introspection interface description for %{name}
 Group: System/Libraries
+Requires: %{libname} = %{version}-%{release}
 
 %description -n %{girname}
 GObject Introspection interface description for %{name}.
@@ -59,6 +60,7 @@ GObject Introspection interface description for %{name}.
 %package -n %{girgtk}
 Summary: GObject Introspection interface description for %{name}-gtk
 Group: System/Libraries
+Requires: %{libgtk} = %{version}-%{release}
 
 %description -n %{girgtk}
 GObject Introspection interface description for %{name}-gtk.
@@ -67,7 +69,6 @@ GObject Introspection interface description for %{name}-gtk.
 Summary: MX development libraries and headers
 Group: Development/C
 Requires: %{libname} = %{version}-%{release}
-Requires: %{girname} = %{version}-%{release}
 %rename %{name}-doc
 Obsoletes: %{name}-devel
 
@@ -78,7 +79,6 @@ MX development libraries and header files
 Summary: MX - Gtk development libraries and headers
 Group: Development/C
 Requires: %{libgtk} = %{version}-%{release}
-Requires: %{girgtk} = %{version}-%{release}
 
 %description -n %{develgtk}
 MX - Gtk development libraries and header files
@@ -95,13 +95,14 @@ MX - Gtk development libraries and header files
 %make LIBS='-lm'
 
 %install
+rm -rf %{buildroot}
 %makeinstall_std
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %find_lang mx-1.0
 
 %files -f mx-1.0.lang
 %doc COPYING.LIB
-%{_bindir}
+%{_bindir}/*
 %{_datadir}/mx
 
 %files -n %{libname}
@@ -129,4 +130,32 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/pkgconfig/mx-gtk-%{api}.pc
 %{_datadir}/gtk-doc/html/mx-gtk
 %{_datadir}/gir-1.0/MxGtk-%{gir_major}.gir
+
+
+
+%changelog
+* Tue Oct  2 2012 Arkady L. Shane <ashejn@rosalab.ru> 1.4.7-1
+- update to 1.4.7
+
+* Wed Dec 07 2011 Matthew Dawkins <mattydaw@mandriva.org> 1.4.1-1
++ Revision: 738686
+- added LIBS for libmath
+- fixed group
+- fixed devel pkg groups
+- new version 1.4.1
+- made proper lib & devel mklibname pkgs
+- split out gtk lib, gir and devel pkgs
+- cleaned up spec
+- merged doc pkg into devel pkgs
+- converted BRs to pkgconfig provides
+- removed defattr
+- removed ldconfig scriptlets
+- removed mkrel & BuildRoot
+- updated URL
+- added builds for clutter-gesture & clutter-imcontext
+- dropped glade build
+- removed .la files
+
+  + Claudio Matsuoka <claudio@mandriva.com>
+    - imported package mx
 
