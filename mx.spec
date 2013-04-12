@@ -3,8 +3,8 @@
 %define gtk_major	0
 %define gir_major	1.0
 
-%define libname		%mklibname %{name} %{major}
-%define libgtk		%mklibname %{name}-gtk %{gtk_major}
+%define libname		%mklibname %{name} %{api} %{major}
+%define libgtk		%mklibname %{name}-gtk %{api} %{gtk_major}
 %define develname	%mklibname %{name} -d
 %define develgtk	%mklibname %{name}-gtk -d
 %define girname		%mklibname %{name}-gir %{gir_major}
